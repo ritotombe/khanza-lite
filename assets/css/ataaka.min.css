@@ -774,10 +774,10 @@ a.btn.disabled,fieldset[disabled] a.btn{pointer-events:none}
 .btn-default.active.focus,.btn-default.active:focus,.btn-default.active:hover,.btn-default:active.focus,.btn-default:active:focus,.btn-default:active:hover,.open>.dropdown-toggle.btn-default.focus,.open>.dropdown-toggle.btn-default:focus,.open>.dropdown-toggle.btn-default:hover{color:#555;background-color:#d4d4d4;border-color:rgba(0,0,0,.1)}
 .btn-default.disabled.focus,.btn-default.disabled:focus,.btn-default.disabled:hover,.btn-default[disabled].focus,.btn-default[disabled]:focus,.btn-default[disabled]:hover,fieldset[disabled] .btn-default.focus,fieldset[disabled] .btn-default:focus,fieldset[disabled] .btn-default:hover{background-color:#fff;border-color:rgba(0,0,0,.1)}
 .btn-default .badge{color:#fff;background-color:#555}
-.btn-primary{color:#fff;background-color:#44813e;border-color:#44813e}
+.btn-primary{color:#fff;background-color:#3c8dbc;border-color:#3c8dbc}
 .btn-primary.focus,.btn-primary:focus{color:#fff;background-color:#222d32;border-color:#172b15}
-.btn-primary:hover{color:#fff;background-color:#222d32;border-color:#2e582a}
-.btn-primary.active,.btn-primary:active,.open>.dropdown-toggle.btn-primary{color:#fff;background-color:#222d32;background-image:none;border-color:#2e582a}
+.btn-primary:hover{color:#fff;background-color:#222d32;border-color:#367fa9}
+.btn-primary.active,.btn-primary:active,.open>.dropdown-toggle.btn-primary{color:#fff;background-color:#222d32;background-image:none;border-color:#367fa9}
 .btn-primary.active.focus,.btn-primary.active:focus,.btn-primary.active:hover,.btn-primary:active.focus,.btn-primary:active:focus,.btn-primary:active:hover,.open>.dropdown-toggle.btn-primary.focus,.open>.dropdown-toggle.btn-primary:focus,.open>.dropdown-toggle.btn-primary:hover{color:#fff;background-color:#254622;border-color:#172b15}
 .btn-primary.disabled.focus,.btn-primary.disabled:focus,.btn-primary.disabled:hover,.btn-primary[disabled].focus,.btn-primary[disabled]:focus,.btn-primary[disabled]:hover,fieldset[disabled] .btn-primary.focus,fieldset[disabled] .btn-primary:focus,fieldset[disabled] .btn-primary:hover{background-color:#44813e;border-color:#44813e}
 .btn-primary .badge{color:#44813e;background-color:#fff}
