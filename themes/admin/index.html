@@ -79,7 +79,7 @@
                 <li><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if}> Dokter Ranap</a></li>
               {else}
                 {if: $mlite.module_igd}
-                <li><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if}><img class="menu_icon" IGD</a></li>
+                <li><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if}> IGD</a></li>
                 {/if}
                 {if: $mlite.module_rawat_jalan}
                 <li><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access || !$mlite.module_rawat_jalan} class="btn disabled"{/if}> Rawat Jalan</a></li>
