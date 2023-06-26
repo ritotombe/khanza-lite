@@ -393,6 +393,7 @@ class Site extends SiteModule
                             if(!empty($decode['nomorreferensi'])) {
                               $this->core->mysql('mlite_antrian_referensi')->save([
                                   'tanggal_periksa' => $decode['tanggalperiksa'],
+                                  'no_rkm_medis' => $data_pasien['no_rkm_medis'],
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
                                   'kodebooking' => $kodebooking,
