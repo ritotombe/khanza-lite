@@ -7,6 +7,9 @@ use Systems\SiteModule;
 class Site extends SiteModule
 {
 
+    protected $mlite;
+    protected $assign;
+
     public function init()
     {
         $this->mlite['notify']         = $this->core->getNotify();
@@ -896,6 +899,7 @@ class Site extends SiteModule
         $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('vedika', htmlspecialchars_array($this->settings('vedika')));
+        $this->tpl->set('pengaturan_billing', $this->settings->get('vedika.billing'));
         echo $this->tpl->draw(MODULES.'/vedika/view/pdf.html', true);
         exit();
       } else {

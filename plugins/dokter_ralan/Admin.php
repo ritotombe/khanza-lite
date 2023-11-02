@@ -11,8 +11,19 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'   => 'manage',
+            'Kelola'   => 'index',
+            'Dokter Ralan'   => 'manage',
+            'Pengaturan' =>'settings'
         ];
+    }
+
+    public function getIndex()
+    {
+      $sub_modules = [
+        ['name' => 'Dokter Ralan', 'url' => url([ADMIN, 'dokter_ralan', 'manage']), 'icon' => 'wheelchair', 'desc' => 'Data pasien rawat jalan'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'dokter_ralan', 'settings']), 'icon' => 'wrench', 'desc' => 'Pengaturan dokter rawat jalan'],
+      ];
+      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
 
     public function anyManage()
@@ -856,8 +867,14 @@ class Admin extends AdminModule
 
       if(!$this->core->mysql('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->core->mysql('pemeriksaan_ralan')->save($_POST);
+        if($this->settings->get('dokter_ralan.set_sudah') == 'ya') {
+          $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save(['stts' => 'Sudah']);
+        }
       } else {
         $this->core->mysql('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
+        if($this->settings->get('dokter_ralan.set_sudah') == 'ya') {
+          $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save(['stts' => 'Sudah']);
+        }
       }
       exit();
     }
@@ -1330,6 +1347,108 @@ class Admin extends AdminModule
       ->where('id_user', $_POST['id_user'])
       ->delete();
       exit();
+    }
+
+    public function getResume($no_rawat)
+    {
+      $data_resume['pemeriksaan_ralan'] = $this->core->mysql('pemeriksaan_ralan')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+      $data_resume['diagnosa'] = $this->core->mysql('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray();
+      $data_resume['prosedur'] = $this->core->mysql('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ralan')->oneArray();
+      echo $this->draw('resume.html', [
+        'reg_periksa' => $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=resume_pasien.kd_dokter')->oneArray(),
+        'data_resume' => $data_resume
+      ]);
+      exit();
+    }
+
+    public function getResumeTampil($no_rawat)
+    {
+      echo $this->draw('resume.tampil.html', ['resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=resume_pasien.kd_dokter')->oneArray()]);
+      exit();
+    }
+
+    public function postResumeSave()
+    {
+      $_POST['kd_dokter']	= $this->core->getUserInfo('username', $_SESSION['mlite_user']);
+
+      if($this->core->mysql('resume_pasien')->where('no_rawat', $_POST['no_rawat'])->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
+        $this->core->mysql('resume_pasien')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save([
+          'kd_dokter'  => $_POST['kd_dokter'],
+          'keluhan_utama' => $_POST['keluhan_utama'],
+          'jalannya_penyakit' => '-',
+          'pemeriksaan_penunjang' => '-',
+          'hasil_laborat' => '-',
+          'diagnosa_utama' => $_POST['diagnosa_utama'],
+          'kd_diagnosa_utama' => '-',
+          'diagnosa_sekunder' => '-',
+          'kd_diagnosa_sekunder' => '-',
+          'diagnosa_sekunder2' => '-',
+          'kd_diagnosa_sekunder2' => '-',
+          'diagnosa_sekunder3' => '-',
+          'kd_diagnosa_sekunder3' => '-',
+          'diagnosa_sekunder4' => '-',
+          'kd_diagnosa_sekunder4' => '-',
+          'prosedur_utama' => $_POST['prosedur_utama'],
+          'kd_prosedur_utama' => '-',
+          'prosedur_sekunder' => '-',
+          'kd_prosedur_sekunder' => '-',
+          'prosedur_sekunder2' => '-',
+          'kd_prosedur_sekunder2' => '-',
+          'prosedur_sekunder3' => '-',
+          'kd_prosedur_sekunder3' => '-',
+          'kondisi_pulang'  => $_POST['kondisi_pulang'],
+          'obat_pulang' => '-'
+        ]);
+      } else {
+        $this->core->mysql('resume_pasien')->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'kd_dokter'  => $_POST['kd_dokter'],
+          'keluhan_utama' => $_POST['keluhan_utama'],
+          'jalannya_penyakit' => '-',
+          'pemeriksaan_penunjang' => '-',
+          'hasil_laborat' => '-',
+          'diagnosa_utama' => $_POST['diagnosa_utama'],
+          'kd_diagnosa_utama' => '-',
+          'diagnosa_sekunder' => '-',
+          'kd_diagnosa_sekunder' => '-',
+          'diagnosa_sekunder2' => '-',
+          'kd_diagnosa_sekunder2' => '-',
+          'diagnosa_sekunder3' => '-',
+          'kd_diagnosa_sekunder3' => '-',
+          'diagnosa_sekunder4' => '-',
+          'kd_diagnosa_sekunder4' => '-',
+          'prosedur_utama' => $_POST['prosedur_utama'],
+          'kd_prosedur_utama' => '-',
+          'prosedur_sekunder' => '-',
+          'kd_prosedur_sekunder' => '-',
+          'prosedur_sekunder2' => '-',
+          'kd_prosedur_sekunder2' => '-',
+          'prosedur_sekunder3' => '-',
+          'kd_prosedur_sekunder3' => '-',
+          'kondisi_pulang'  => $_POST['kondisi_pulang'],
+          'obat_pulang' => '-'
+        ]);
+      }
+      exit();
+    }
+
+    public function getSettings()
+    {
+        $this->assign['title'] = 'Pengaturan Modul Dokter Ralan';
+        $this->assign['dokter_ralan'] = htmlspecialchars_array($this->settings('dokter_ralan'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettings()
+    {
+        foreach ($_POST['dokter_ralan'] as $key => $val) {
+            $this->settings('dokter_ralan', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan telah disimpan');
+        redirect(url([ADMIN, 'dokter_ralan', 'settings']));
     }
 
     public function getJavascript()

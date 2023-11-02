@@ -8,6 +8,20 @@ use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
+
+    protected $consid;
+    protected $secretkey;
+    protected $user_key;
+    protected $api_url;
+    protected $assign;
+    
+    public function init()
+    {
+      $this->consid = $this->settings->get('settings.BpjsConsID');
+      $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $this->user_key = $this->settings->get('settings.BpjsUserKey');
+      $this->api_url = $this->settings->get('settings.BpjsApiUrl');
+    }
     private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
     public function navigation()
     {
@@ -156,7 +170,7 @@ class Admin extends AdminModule
         $this->assign['list'] = [];
         foreach ($rows as $row) {
           $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
-          $row['no_sep'] = $bridging_sep['no_sep'];
+          $row['no_sep'] = isset_or($bridging_sep['no_sep']);
           $this->assign['list'][] = $row;
         }
 
@@ -612,7 +626,7 @@ class Admin extends AdminModule
             'tanggal_periksa' => $_POST['tanggal_datang'],
             'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
             'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-            'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $no_rawat), $_POST['tanggal_datang']),
+            'no_reg' => $this->core->setNoBooking($this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']), $_POST['tanggal_datang'], $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat'])),
             'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
             'limit_reg' => 0,
             'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
@@ -632,7 +646,7 @@ class Admin extends AdminModule
       $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
 
       $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']))->oneArray();
-      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli', $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']))->oneArray();
+      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']))->oneArray();
       $get_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $_POST['no_rawat'])->oneArray();
       $_POST['no_sep'] = $get_sep['no_sep'];
       $get_sep_internal = $this->core->mysql('bridging_sep_internal')->where('no_rawat', $_POST['no_rawat'])->oneArray();
@@ -650,6 +664,8 @@ class Admin extends AdminModule
           'user' => $_POST['sep_user']
         ]
       ];
+      $statusUrl = 'insert';
+      $method = 'post';
 
       $data = json_encode($data);
 
@@ -1142,9 +1158,11 @@ class Admin extends AdminModule
         $response = curl_exec($curl);
 
         curl_close($curl);
-        //echo $response;
-        if($response == 'Success') {
-          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+        $json = json_decode($response, true);
+        if($json['status'] == 'Success') {
+          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$json['msg'].'" width="150" />';
+        } else {
+          echo 'Gagal menambahkan gambar';
         }
 
       } else {
@@ -1406,7 +1424,8 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getSepDetail($no_sep){
+    public function getSepDetail($no_sep)
+    {
       $sep = $this->core->mysql('bridging_sep')->where('no_sep', $no_sep)->oneArray();
       $this->tpl->set('sep', $this->tpl->noParse_array(htmlspecialchars_array($sep)));
 
@@ -1414,6 +1433,63 @@ class Admin extends AdminModule
       $data_sep['potensi_prb'] = $potensi_prb['prb'];
       echo $this->draw('sep.detail.html', ['data_sep' => $data_sep]);
       exit();
+    }
+
+    public function getSuratRujukan($no_rawat)
+    {
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+        $pasien = $this->core->mysql('pasien')
+          ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+          ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+          ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->oneArray();
+        $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+        $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+        $this->tpl->set('nm_dokter', $nm_dokter);
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+        echo $this->tpl->draw(MODULES.'/rawat_jalan/view/admin/surat.rujukan.html', true);
+        exit();
+    }
+
+    public function getSuratSehat($no_rawat)
+    {
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+        $pasien = $this->core->mysql('pasien')
+          ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+          ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+          ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->oneArray();
+        $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+        $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+        $this->tpl->set('nm_dokter', $nm_dokter);
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+        echo $this->tpl->draw(MODULES.'/rawat_jalan/view/admin/surat.sehat.html', true);
+        exit();
+    }
+
+    public function getSuratSakit($no_rawat)
+    {
+        $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', revertNoRawat($no_rawat));
+        $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+        $pasien = $this->core->mysql('pasien')
+          ->join('kelurahan', 'kelurahan.kd_kel=pasien.kd_kel')
+          ->join('kecamatan', 'kecamatan.kd_kec=pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab=pasien.kd_kab')
+          ->join('propinsi', 'propinsi.kd_prop=pasien.kd_prop')
+          ->where('no_rkm_medis', $no_rkm_medis)
+          ->oneArray();
+        $nm_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+        $this->tpl->set('pasien', $this->tpl->noParse_array(htmlspecialchars_array($pasien)));
+        $this->tpl->set('nm_dokter', $nm_dokter);
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($this->settings('settings'))));
+        echo $this->tpl->draw(MODULES.'/rawat_jalan/view/admin/surat.sakit.html', true);
+        exit();
     }
 
     public function getJavascript()

@@ -3,18 +3,12 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 15, 2023 at 10:47 AM
+-- Generation Time: Aug 12, 2023 at 08:26 PM
 -- Server version: 5.7.39-log
 -- PHP Version: 7.3.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `mlite_db`
@@ -702,6 +696,117 @@ INSERT INTO `industrifarmasi` (`kode_industri`, `nama_industri`, `alamat`, `kota
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris` (
+  `no_inventaris` varchar(30) NOT NULL,
+  `kode_barang` varchar(20) DEFAULT NULL,
+  `asal_barang` enum('Beli','Bantuan','Hibah','-') DEFAULT NULL,
+  `tgl_pengadaan` date DEFAULT NULL,
+  `harga` double DEFAULT NULL,
+  `status_barang` enum('Ada','Rusak','Hilang','Perbaikan','Dipinjam','-') DEFAULT NULL,
+  `id_ruang` char(5) DEFAULT NULL,
+  `no_rak` char(3) DEFAULT NULL,
+  `no_box` char(3) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_barang`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_barang` (
+  `kode_barang` varchar(20) NOT NULL,
+  `nama_barang` varchar(60) DEFAULT NULL,
+  `jml_barang` int(11) DEFAULT NULL,
+  `kode_produsen` varchar(10) DEFAULT NULL,
+  `id_merk` varchar(10) DEFAULT NULL,
+  `thn_produksi` year(4) DEFAULT NULL,
+  `isbn` varchar(20) DEFAULT NULL,
+  `id_kategori` char(10) DEFAULT NULL,
+  `id_jenis` char(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_jenis`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_jenis` (
+  `id_jenis` char(10) NOT NULL,
+  `nama_jenis` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_kategori`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_kategori` (
+  `id_kategori` char(10) NOT NULL,
+  `nama_kategori` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_merk`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_merk` (
+  `id_merk` varchar(10) NOT NULL,
+  `nama_merk` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_peminjaman`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_peminjaman` (
+  `peminjam` varchar(50) NOT NULL DEFAULT '',
+  `tlp` varchar(13) NOT NULL,
+  `no_inventaris` varchar(30) NOT NULL DEFAULT '',
+  `tgl_pinjam` date NOT NULL DEFAULT '0000-00-00',
+  `tgl_kembali` date DEFAULT NULL,
+  `nip` varchar(20) NOT NULL DEFAULT '',
+  `status_pinjam` enum('Masih Dipinjam','Sudah Kembali') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_produsen`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_produsen` (
+  `kode_produsen` varchar(10) NOT NULL,
+  `nama_produsen` varchar(40) DEFAULT NULL,
+  `alamat_produsen` varchar(70) DEFAULT NULL,
+  `no_telp` varchar(13) DEFAULT NULL,
+  `email` varchar(25) DEFAULT NULL,
+  `website_produsen` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_ruang`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_ruang` (
+  `id_ruang` varchar(5) NOT NULL,
+  `nama_ruang` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `jabatan`
 --
 
@@ -1244,6 +1349,18 @@ CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `maping_poliklinik_pcare`
+--
+
+CREATE TABLE IF NOT EXISTS `maping_poliklinik_pcare` (
+  `kd_poli_rs` char(5) NOT NULL,
+  `kd_poli_pcare` char(5) DEFAULT NULL,
+  `nm_poli_pcare` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `maping_poli_bpjs`
 --
 
@@ -1413,6 +1530,71 @@ CREATE TABLE IF NOT EXISTS `mlite_billing` (
   `id_user` int(11) NOT NULL,
   `keterangan` varchar(100) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_bridging_pcare`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_bridging_pcare` (
+  `id` int(11) NOT NULL,
+  `no_rawat` text NOT NULL,
+  `no_rkm_medis` text,
+  `tgl_daftar` text,
+  `nomor_kunjungan` text,
+  `kode_provider_peserta` text,
+  `nomor_jaminan` text,
+  `kode_poli` text,
+  `nama_poli` text,
+  `kunjungan_sakit` text,
+  `sistole` text,
+  `diastole` text,
+  `nadi` text,
+  `respirasi` text,
+  `tinggi` text,
+  `berat` text,
+  `lingkar_perut` text,
+  `rujuk_balik` text,
+  `subyektif` text,
+  `kode_tkp` text,
+  `nomor_urut` text,
+  `kode_kesadaran` text,
+  `nama_kesadaran` text,
+  `terapi` text,
+  `kode_status_pulang` text,
+  `nama_status_pulang` text,
+  `tgl_pulang` text,
+  `tgl_kunjungan` text,
+  `kode_dokter` text,
+  `nama_dokter` text,
+  `kode_diagnosa1` text,
+  `nama_diagnosa1` text,
+  `kode_diagnosa2` text,
+  `nama_diagnosa2` text,
+  `kode_diagnosa3` text,
+  `nama_diagnosa3` text,
+  `tgl_estimasi_rujuk` text,
+  `kode_ppk` text,
+  `nama_ppk` text,
+  `kode_spesialis` text,
+  `nama_spesialis` text,
+  `kode_subspesialis` text,
+  `nama_subspesialis` text,
+  `kode_sarana` text,
+  `nama_sarana` text,
+  `kode_referensikhusus` text,
+  `nama_referensikhusus` text,
+  `kode_faskeskhusus` text,
+  `nama_faskeskhusus` text,
+  `catatan` text,
+  `kode_tacc` text,
+  `nama_tacc` text,
+  `alasan_tacc` text,
+  `id_user` text NOT NULL,
+  `tgl_input` text NOT NULL,
+  `status_kirim` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -1647,7 +1829,7 @@ CREATE TABLE IF NOT EXISTS `mlite_settings` (
   `module` text,
   `field` text,
   `value` text
-) ENGINE=MyISAM AUTO_INCREMENT=148 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=151 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `mlite_settings`
@@ -1667,7 +1849,7 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (11, 'settings', 'homepage', 'main'),
 (12, 'settings', 'wallpaper', 'uploads/settings/wallpaper.jpg'),
 (13, 'settings', 'text_color', '#44813e'),
-(14, 'settings', 'igd', '-'),
+(14, 'settings', 'igd', 'IGDK'),
 (15, 'settings', 'laboratorium', '-'),
 (16, 'settings', 'pj_laboratorium', 'DR001'),
 (17, 'settings', 'radiologi', '-'),
@@ -1801,9 +1983,8 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (145, 'veronisa', 'username', ''),
 (146, 'veronisa', 'password', ''),
 (147, 'veronisa', 'obat_kronis', ''),
-(148, 'jkn_mobile', 'carakirim', 'baru'),
-(149, 'jkn_mobile', 'kirimantrian', 'tidak'),
-(150, 'settings', 'keamanan', 'ya');
+(148, 'jkn_mobile', 'kirimantrian', 'tidak'),
+(149, 'settings', 'keamanan', 'ya');
 
 -- --------------------------------------------------------
 
@@ -2060,6 +2241,24 @@ CREATE TABLE IF NOT EXISTS `obatbhp_ok` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `obat_racikan`
+--
+
+CREATE TABLE IF NOT EXISTS `obat_racikan` (
+  `tgl_perawatan` date NOT NULL,
+  `jam` time NOT NULL,
+  `no_rawat` varchar(17) NOT NULL,
+  `no_racik` varchar(2) NOT NULL,
+  `nama_racik` varchar(100) NOT NULL,
+  `kd_racik` varchar(3) NOT NULL,
+  `jml_dr` int(11) NOT NULL,
+  `aturan_pakai` varchar(150) NOT NULL,
+  `keterangan` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `operasi`
 --
 
@@ -2286,6 +2485,22 @@ INSERT INTO `pegawai` (`id`, `nik`, `nama`, `jk`, `jbtn`, `jnj_jabatan`, `kode_k
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `pemeliharaan_inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `pemeliharaan_inventaris` (
+  `no_inventaris` varchar(30) NOT NULL,
+  `tanggal` date NOT NULL,
+  `uraian_kegiatan` varchar(255) NOT NULL,
+  `nip` varchar(20) NOT NULL,
+  `pelaksana` enum('Teknisi Rumah Sakit','Teknisi Rujukan','Pihak ke III') NOT NULL,
+  `biaya` double NOT NULL,
+  `jenis_pemeliharaan` enum('Running Maintenance','Shut Down Maintenance','Emergency Maintenance') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `pemeriksaan_ralan`
 --
 
@@ -2406,6 +2621,23 @@ CREATE TABLE IF NOT EXISTS `penyakit` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `perbaikan_inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `perbaikan_inventaris` (
+  `no_permintaan` varchar(15) NOT NULL,
+  `tanggal` date NOT NULL,
+  `uraian_kegiatan` varchar(255) NOT NULL,
+  `nip` varchar(20) NOT NULL,
+  `pelaksana` enum('Teknisi Rumah Sakit','Teknisi Rujukan','Pihak ke III') NOT NULL,
+  `biaya` double NOT NULL,
+  `keterangan` varchar(255) NOT NULL,
+  `status` enum('Bisa Diperbaiki','Tidak Bisa Diperbaiki') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `periksa_lab`
 --
 
@@ -2518,6 +2750,20 @@ CREATE TABLE IF NOT EXISTS `permintaan_pemeriksaan_radiologi` (
   `noorder` varchar(15) NOT NULL,
   `kd_jenis_prw` varchar(15) NOT NULL,
   `stts_bayar` enum('Sudah','Belum') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permintaan_perbaikan_inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `permintaan_perbaikan_inventaris` (
+  `no_permintaan` varchar(15) NOT NULL,
+  `no_inventaris` varchar(30) DEFAULT NULL,
+  `nik` varchar(20) DEFAULT NULL,
+  `tanggal` datetime DEFAULT NULL,
+  `deskripsi_kerusakan` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -3238,6 +3484,90 @@ CREATE TABLE IF NOT EXISTS `temporary_presensi` (
   `photo` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_donor`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_donor` (
+  `no_donor` varchar(15) NOT NULL,
+  `no_pendonor` varchar(15) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `dinas` enum('Pagi','Siang','Sore','Malam') DEFAULT NULL,
+  `tensi` varchar(7) DEFAULT NULL,
+  `no_bag` int(11) DEFAULT NULL,
+  `jenis_bag` enum('SB','DB','TB','QB') DEFAULT NULL,
+  `jenis_donor` enum('DB','DP','DS') DEFAULT NULL,
+  `tempat_aftap` enum('Dalam Gedung','Luar Gedung') DEFAULT NULL,
+  `petugas_aftap` varchar(20) DEFAULT NULL,
+  `hbsag` enum('Negatif','Positif') DEFAULT NULL,
+  `hcv` enum('Negatif','Positif') DEFAULT NULL,
+  `hiv` enum('Negatif','Positif') DEFAULT NULL,
+  `spilis` enum('Negatif','Positif') DEFAULT NULL,
+  `malaria` enum('Negatif','Positif') DEFAULT NULL,
+  `petugas_u_saring` varchar(20) DEFAULT NULL,
+  `status` enum('Aman','Cekal') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_komponen_darah`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_komponen_darah` (
+  `kode` varchar(5) NOT NULL,
+  `nama` varchar(70) DEFAULT NULL,
+  `lama` smallint(6) DEFAULT NULL,
+  `jasa_sarana` double DEFAULT NULL,
+  `paket_bhp` double DEFAULT NULL,
+  `kso` double DEFAULT NULL,
+  `manajemen` double DEFAULT NULL,
+  `total` double DEFAULT NULL,
+  `pembatalan` double DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_pendonor`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_pendonor` (
+  `no_pendonor` varchar(15) NOT NULL,
+  `nama` varchar(40) NOT NULL,
+  `no_ktp` varchar(20) NOT NULL,
+  `jk` enum('L','P') NOT NULL,
+  `tmp_lahir` varchar(15) NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `alamat` varchar(100) NOT NULL,
+  `kd_kel` int(11) NOT NULL,
+  `kd_kec` int(11) NOT NULL,
+  `kd_kab` int(11) NOT NULL,
+  `kd_prop` int(11) NOT NULL,
+  `golongan_darah` enum('A','AB','B','O') NOT NULL,
+  `resus` enum('(-)','(+)') NOT NULL,
+  `no_telp` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_stok_darah`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_stok_darah` (
+  `no_kantong` varchar(20) NOT NULL DEFAULT '',
+  `kode_komponen` varchar(5) DEFAULT NULL,
+  `golongan_darah` enum('A','AB','B','O') DEFAULT NULL,
+  `resus` enum('(-)','(+)') DEFAULT NULL,
+  `tanggal_aftap` date DEFAULT NULL,
+  `tanggal_kadaluarsa` date DEFAULT NULL,
+  `asal_darah` enum('Hibah','Beli','Produksi Sendiri') DEFAULT NULL,
+  `status` enum('Ada','Diambil','Dimusnahkan') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 --
 -- Indexes for dumped tables
 --
@@ -3551,6 +3881,83 @@ ALTER TABLE `industrifarmasi`
   ADD KEY `no_telp` (`no_telp`);
 
 --
+-- Indexes for table `inventaris`
+--
+ALTER TABLE `inventaris`
+  ADD PRIMARY KEY (`no_inventaris`),
+  ADD KEY `kode_barang` (`kode_barang`),
+  ADD KEY `kd_ruang` (`id_ruang`),
+  ADD KEY `asal_barang` (`asal_barang`),
+  ADD KEY `tgl_pengadaan` (`tgl_pengadaan`),
+  ADD KEY `harga` (`harga`),
+  ADD KEY `status_barang` (`status_barang`),
+  ADD KEY `no_rak` (`no_rak`),
+  ADD KEY `no_box` (`no_box`);
+
+--
+-- Indexes for table `inventaris_barang`
+--
+ALTER TABLE `inventaris_barang`
+  ADD PRIMARY KEY (`kode_barang`),
+  ADD KEY `kode_produsen` (`kode_produsen`),
+  ADD KEY `id_merk` (`id_merk`),
+  ADD KEY `id_kategori` (`id_kategori`),
+  ADD KEY `id_jenis` (`id_jenis`),
+  ADD KEY `nama_barang` (`nama_barang`),
+  ADD KEY `jml_barang` (`jml_barang`),
+  ADD KEY `thn_produksi` (`thn_produksi`),
+  ADD KEY `isbn` (`isbn`);
+
+--
+-- Indexes for table `inventaris_jenis`
+--
+ALTER TABLE `inventaris_jenis`
+  ADD PRIMARY KEY (`id_jenis`),
+  ADD KEY `nama_jenis` (`nama_jenis`);
+
+--
+-- Indexes for table `inventaris_kategori`
+--
+ALTER TABLE `inventaris_kategori`
+  ADD PRIMARY KEY (`id_kategori`),
+  ADD KEY `nama_kategori` (`nama_kategori`);
+
+--
+-- Indexes for table `inventaris_merk`
+--
+ALTER TABLE `inventaris_merk`
+  ADD PRIMARY KEY (`id_merk`),
+  ADD KEY `nama_merk` (`nama_merk`);
+
+--
+-- Indexes for table `inventaris_peminjaman`
+--
+ALTER TABLE `inventaris_peminjaman`
+  ADD PRIMARY KEY (`peminjam`,`no_inventaris`,`tgl_pinjam`,`nip`) USING BTREE,
+  ADD KEY `no_inventaris` (`no_inventaris`) USING BTREE,
+  ADD KEY `nip` (`nip`) USING BTREE,
+  ADD KEY `tgl_kembali` (`tgl_kembali`) USING BTREE,
+  ADD KEY `status_pinjam` (`status_pinjam`) USING BTREE;
+
+--
+-- Indexes for table `inventaris_produsen`
+--
+ALTER TABLE `inventaris_produsen`
+  ADD PRIMARY KEY (`kode_produsen`),
+  ADD KEY `nama_produsen` (`nama_produsen`),
+  ADD KEY `alamat_produsen` (`alamat_produsen`),
+  ADD KEY `no_telp` (`no_telp`),
+  ADD KEY `email` (`email`),
+  ADD KEY `website_produsen` (`website_produsen`);
+
+--
+-- Indexes for table `inventaris_ruang`
+--
+ALTER TABLE `inventaris_ruang`
+  ADD PRIMARY KEY (`id_ruang`),
+  ADD KEY `nama_ruang` (`nama_ruang`);
+
+--
 -- Indexes for table `jabatan`
 --
 ALTER TABLE `jabatan`
@@ -3788,6 +4195,12 @@ ALTER TABLE `maping_dokter_dpjpvclaim`
   ADD PRIMARY KEY (`kd_dokter`) USING BTREE;
 
 --
+-- Indexes for table `maping_poliklinik_pcare`
+--
+ALTER TABLE `maping_poliklinik_pcare`
+  ADD PRIMARY KEY (`kd_poli_rs`) USING BTREE;
+
+--
 -- Indexes for table `maping_poli_bpjs`
 --
 ALTER TABLE `maping_poli_bpjs`
@@ -3825,16 +4238,16 @@ ALTER TABLE `mlite_antrian_loket`
   ADD PRIMARY KEY (`kd`);
 
 --
--- Indexes for table `mlite_antrian_referensi`
---
-ALTER TABLE `mlite_antrian_referensi`
-  ADD PRIMARY KEY (`nomor_referensi`);
-
---
 -- Indexes for table `mlite_billing`
 --
 ALTER TABLE `mlite_billing`
   ADD PRIMARY KEY (`id_billing`);
+
+--
+-- Indexes for table `mlite_bridging_pcare`
+--
+ALTER TABLE `mlite_bridging_pcare`
+  ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
 -- Indexes for table `mlite_detailjurnal`
@@ -3990,6 +4403,15 @@ ALTER TABLE `obatbhp_ok`
   ADD KEY `hargasatuan` (`hargasatuan`);
 
 --
+-- Indexes for table `obat_racikan`
+--
+ALTER TABLE `obat_racikan`
+  ADD PRIMARY KEY (`tgl_perawatan`,`jam`,`no_rawat`,`no_racik`),
+  ADD KEY `kd_racik` (`kd_racik`),
+  ADD KEY `no_rawat` (`no_rawat`),
+  ADD KEY `no_racik` (`no_racik`);
+
+--
 -- Indexes for table `operasi`
 --
 ALTER TABLE `operasi`
@@ -4113,6 +4535,13 @@ ALTER TABLE `pegawai`
   ADD KEY `kode_resiko` (`kode_resiko`) USING BTREE;
 
 --
+-- Indexes for table `pemeliharaan_inventaris`
+--
+ALTER TABLE `pemeliharaan_inventaris`
+  ADD PRIMARY KEY (`no_inventaris`,`tanggal`),
+  ADD KEY `nip` (`nip`);
+
+--
 -- Indexes for table `pemeriksaan_ralan`
 --
 ALTER TABLE `pemeriksaan_ralan`
@@ -4148,6 +4577,13 @@ ALTER TABLE `penyakit`
   ADD KEY `kd_ktg` (`kd_ktg`),
   ADD KEY `nm_penyakit` (`nm_penyakit`),
   ADD KEY `status` (`status`);
+
+--
+-- Indexes for table `perbaikan_inventaris`
+--
+ALTER TABLE `perbaikan_inventaris`
+  ADD PRIMARY KEY (`no_permintaan`),
+  ADD KEY `nip` (`nip`);
 
 --
 -- Indexes for table `periksa_lab`
@@ -4198,6 +4634,14 @@ ALTER TABLE `permintaan_pemeriksaan_lab`
 ALTER TABLE `permintaan_pemeriksaan_radiologi`
   ADD PRIMARY KEY (`noorder`,`kd_jenis_prw`),
   ADD KEY `kd_jenis_prw` (`kd_jenis_prw`);
+
+--
+-- Indexes for table `permintaan_perbaikan_inventaris`
+--
+ALTER TABLE `permintaan_perbaikan_inventaris`
+  ADD PRIMARY KEY (`no_permintaan`),
+  ADD KEY `no_inventaris` (`no_inventaris`),
+  ADD KEY `nik` (`nik`);
 
 --
 -- Indexes for table `permintaan_radiologi`
@@ -4475,6 +4919,38 @@ ALTER TABLE `temporary_presensi`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `utd_donor`
+--
+ALTER TABLE `utd_donor`
+  ADD PRIMARY KEY (`no_donor`),
+  ADD KEY `petugas_aftap` (`petugas_aftap`),
+  ADD KEY `petugas_u_saring` (`petugas_u_saring`),
+  ADD KEY `no_pendonor` (`no_pendonor`);
+
+--
+-- Indexes for table `utd_komponen_darah`
+--
+ALTER TABLE `utd_komponen_darah`
+  ADD PRIMARY KEY (`kode`);
+
+--
+-- Indexes for table `utd_pendonor`
+--
+ALTER TABLE `utd_pendonor`
+  ADD PRIMARY KEY (`no_pendonor`),
+  ADD KEY `kd_kec` (`kd_kec`),
+  ADD KEY `kd_kab` (`kd_kab`),
+  ADD KEY `kd_prop` (`kd_prop`),
+  ADD KEY `kd_kel` (`kd_kel`) USING BTREE;
+
+--
+-- Indexes for table `utd_stok_darah`
+--
+ALTER TABLE `utd_stok_darah`
+  ADD PRIMARY KEY (`no_kantong`),
+  ADD KEY `kode_komponen` (`kode_komponen`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -4519,6 +4995,11 @@ ALTER TABLE `mlite_antrian_loket`
 ALTER TABLE `mlite_billing`
   MODIFY `id_billing` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `mlite_bridging_pcare`
+--
+ALTER TABLE `mlite_bridging_pcare`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `mlite_duitku`
 --
 ALTER TABLE `mlite_duitku`
@@ -4552,7 +5033,7 @@ ALTER TABLE `mlite_remember_me`
 -- AUTO_INCREMENT for table `mlite_settings`
 --
 ALTER TABLE `mlite_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=148;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=151;
 --
 -- AUTO_INCREMENT for table `mlite_users`
 --
@@ -4777,6 +5258,29 @@ ALTER TABLE `hasil_radiologi`
   ADD CONSTRAINT `hasil_radiologi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `inventaris`
+--
+ALTER TABLE `inventaris`
+  ADD CONSTRAINT `inventaris_ibfk_1` FOREIGN KEY (`kode_barang`) REFERENCES `inventaris_barang` (`kode_barang`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_ibfk_2` FOREIGN KEY (`id_ruang`) REFERENCES `inventaris_ruang` (`id_ruang`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `inventaris_barang`
+--
+ALTER TABLE `inventaris_barang`
+  ADD CONSTRAINT `inventaris_barang_ibfk_5` FOREIGN KEY (`kode_produsen`) REFERENCES `inventaris_produsen` (`kode_produsen`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_barang_ibfk_6` FOREIGN KEY (`id_merk`) REFERENCES `inventaris_merk` (`id_merk`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_barang_ibfk_7` FOREIGN KEY (`id_kategori`) REFERENCES `inventaris_kategori` (`id_kategori`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_barang_ibfk_8` FOREIGN KEY (`id_jenis`) REFERENCES `inventaris_jenis` (`id_jenis`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `inventaris_peminjaman`
+--
+ALTER TABLE `inventaris_peminjaman`
+  ADD CONSTRAINT `inventaris_peminjaman_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_peminjaman_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `jadwal`
 --
 ALTER TABLE `jadwal`
@@ -4855,6 +5359,12 @@ ALTER TABLE `maping_dokter_dpjpvclaim`
   ADD CONSTRAINT `maping_dokter_dpjpvclaim_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `maping_poliklinik_pcare`
+--
+ALTER TABLE `maping_poliklinik_pcare`
+  ADD CONSTRAINT `maping_poliklinik_pcare_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `maping_poli_bpjs`
 --
 ALTER TABLE `maping_poli_bpjs`
@@ -4917,6 +5427,13 @@ ALTER TABLE `obatbhp_ok`
   ADD CONSTRAINT `obatbhp_ok_ibfk_1` FOREIGN KEY (`kode_sat`) REFERENCES `kodesatuan` (`kode_sat`) ON UPDATE CASCADE;
 
 --
+-- Constraints for table `obat_racikan`
+--
+ALTER TABLE `obat_racikan`
+  ADD CONSTRAINT `obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `obat_racikan_ibfk_2` FOREIGN KEY (`kd_racik`) REFERENCES `metode_racik` (`kd_racik`) ON UPDATE CASCADE;
+
+--
 -- Constraints for table `operasi`
 --
 ALTER TABLE `operasi`
@@ -4977,6 +5494,13 @@ ALTER TABLE `pegawai`
   ADD CONSTRAINT `pegawai_ibfk_9` FOREIGN KEY (`kode_emergency`) REFERENCES `emergency_index` (`kode_emergency`) ON UPDATE CASCADE;
 
 --
+-- Constraints for table `pemeliharaan_inventaris`
+--
+ALTER TABLE `pemeliharaan_inventaris`
+  ADD CONSTRAINT `pemeliharaan_inventaris_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pemeliharaan_inventaris_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `pemeriksaan_ralan`
 --
 ALTER TABLE `pemeriksaan_ralan`
@@ -4995,6 +5519,13 @@ ALTER TABLE `pemeriksaan_ranap`
 --
 ALTER TABLE `penyakit`
   ADD CONSTRAINT `penyakit_ibfk_1` FOREIGN KEY (`kd_ktg`) REFERENCES `kategori_penyakit` (`kd_ktg`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `perbaikan_inventaris`
+--
+ALTER TABLE `perbaikan_inventaris`
+  ADD CONSTRAINT `perbaikan_inventaris_ibfk_1` FOREIGN KEY (`no_permintaan`) REFERENCES `permintaan_perbaikan_inventaris` (`no_permintaan`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `perbaikan_inventaris_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `periksa_lab`
@@ -5044,6 +5575,13 @@ ALTER TABLE `permintaan_pemeriksaan_lab`
 ALTER TABLE `permintaan_pemeriksaan_radiologi`
   ADD CONSTRAINT `permintaan_pemeriksaan_radiologi_ibfk_1` FOREIGN KEY (`noorder`) REFERENCES `permintaan_radiologi` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `permintaan_pemeriksaan_radiologi_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `permintaan_perbaikan_inventaris`
+--
+ALTER TABLE `permintaan_perbaikan_inventaris`
+  ADD CONSTRAINT `permintaan_perbaikan_inventaris_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `permintaan_perbaikan_inventaris_ibfk_2` FOREIGN KEY (`nik`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `permintaan_radiologi`
@@ -5219,6 +5757,24 @@ ALTER TABLE `template_laboratorium`
 ALTER TABLE `temporary_presensi`
   ADD CONSTRAINT `temporary_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+--
+-- Constraints for table `utd_donor`
+--
+ALTER TABLE `utd_donor`
+  ADD CONSTRAINT `utd_donor_ibfk_1` FOREIGN KEY (`petugas_aftap`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_donor_ibfk_2` FOREIGN KEY (`petugas_u_saring`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_donor_ibfk_3` FOREIGN KEY (`no_pendonor`) REFERENCES `utd_pendonor` (`no_pendonor`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `utd_pendonor`
+--
+ALTER TABLE `utd_pendonor`
+  ADD CONSTRAINT `utd_pendonor_ibfk_1` FOREIGN KEY (`kd_kec`) REFERENCES `kecamatan` (`kd_kec`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_pendonor_ibfk_2` FOREIGN KEY (`kd_kab`) REFERENCES `kabupaten` (`kd_kab`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_pendonor_ibfk_3` FOREIGN KEY (`kd_prop`) REFERENCES `propinsi` (`kd_prop`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `utd_stok_darah`
+--
+ALTER TABLE `utd_stok_darah`
+  ADD CONSTRAINT `utd_stok_darah_ibfk_1` FOREIGN KEY (`kode_komponen`) REFERENCES `utd_komponen_darah` (`kode`) ON UPDATE CASCADE;

@@ -215,7 +215,15 @@ abstract class Main
             }
 
             if (empty(parseURL(1))) {
-                redirect(url([ADMIN, 'dashboard', 'main']));
+                if(MULTI_APP) {
+                    if(!empty(MULTI_APP_REDIRECT)) {
+                        redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                    } else {
+                        redirect(url([ADMIN, 'dashboard', 'main']));
+                    }
+                } else {
+                    redirect(url([ADMIN, 'dashboard', 'main']));
+                }
             } elseif (!isset($_GET['t']) || ($_SESSION['token'] != @$_GET['t'])) {
                 return false;
             }
@@ -238,7 +246,15 @@ abstract class Main
                         $this->db('mlite_remember_me')->where('remember_me.user_id', $token[0])->where('remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
 
                         if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
-                            redirect(url([ADMIN, 'dashboard', 'main']));
+                            if(MULTI_APP) {
+                                if(!empty(MULTI_APP_REDIRECT)) {
+                                    redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                                } else {
+                                    redirect(url([ADMIN, 'dashboard', 'main']));
+                                }
+                            } else {
+                                redirect(url([ADMIN, 'dashboard', 'main']));
+                            }
                         }
 
                         return true;
@@ -374,7 +390,7 @@ abstract class Main
 
     public function setNoResep($date)
     {
-        $last_no_resep = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date'");
+        $last_no_resep = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date' OR tgl_perawatan =  '$date'");
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
         if(empty($last_no_resep[0])) {
