@@ -519,9 +519,23 @@ function stringDecrypt($key, $string){
     $key_hash = hex2bin(hash('sha256', $key));
     $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);
 
-    $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
+    $output = openssl_decrypt(base64_decode(isset_or($string,'')), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
 
     return $output;
+}
+
+function hitungUmur($tanggal_lahir)
+{
+  $birthDate = new \DateTime($tanggal_lahir);
+  $today = new \DateTime("today");
+  $umur = "0 Th 0 Bl 0 Hr";
+  if ($birthDate < $today) {
+    $y = $today->diff($birthDate)->y;
+    $m = $today->diff($birthDate)->m;
+    $d = $today->diff($birthDate)->d;
+    $umur =  $y." Th ".$m." Bl ".$d." Hr";
+  }
+  return $umur;
 }
 
 function decompress($string){

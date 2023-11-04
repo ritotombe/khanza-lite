@@ -131,6 +131,71 @@ CREATE TABLE IF NOT EXISTS `mlite_billing` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `mlite_bridging_pcare`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_bridging_pcare` (
+  `id` int(11) NOT NULL,
+  `no_rawat` text NOT NULL,
+  `no_rkm_medis` text,
+  `tgl_daftar` text,
+  `nomor_kunjungan` text,
+  `kode_provider_peserta` text,
+  `nomor_jaminan` text,
+  `kode_poli` text,
+  `nama_poli` text,
+  `kunjungan_sakit` text,
+  `sistole` text,
+  `diastole` text,
+  `nadi` text,
+  `respirasi` text,
+  `tinggi` text,
+  `berat` text,
+  `lingkar_perut` text,
+  `rujuk_balik` text,
+  `subyektif` text,
+  `kode_tkp` text,
+  `nomor_urut` text,
+  `kode_kesadaran` text,
+  `nama_kesadaran` text,
+  `terapi` text,
+  `kode_status_pulang` text,
+  `nama_status_pulang` text,
+  `tgl_pulang` text,
+  `tgl_kunjungan` text,
+  `kode_dokter` text,
+  `nama_dokter` text,
+  `kode_diagnosa1` text,
+  `nama_diagnosa1` text,
+  `kode_diagnosa2` text,
+  `nama_diagnosa2` text,
+  `kode_diagnosa3` text,
+  `nama_diagnosa3` text,
+  `tgl_estimasi_rujuk` text,
+  `kode_ppk` text,
+  `nama_ppk` text,
+  `kode_spesialis` text,
+  `nama_spesialis` text,
+  `kode_subspesialis` text,
+  `nama_subspesialis` text,
+  `kode_sarana` text,
+  `nama_sarana` text,
+  `kode_referensikhusus` text,
+  `nama_referensikhusus` text,
+  `kode_faskeskhusus` text,
+  `nama_faskeskhusus` text,
+  `catatan` text,
+  `kode_tacc` text,
+  `nama_tacc` text,
+  `alasan_tacc` text,
+  `id_user` text NOT NULL,
+  `tgl_input` text NOT NULL,
+  `status_kirim` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mlite_detailjurnal`
 --
 
@@ -287,6 +352,35 @@ CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `mlite_ohis`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_ohis` (
+  `id` int(11) NOT NULL,
+  `no_rkm_medis` text NOT NULL,
+  `d_16` text,
+  `d_11` text,
+  `d_26` text,
+  `d_36` text,
+  `d_31` text,
+  `d_46` text,
+  `c_16` text,
+  `c_11` text,
+  `c_26` text,
+  `c_36` text,
+  `c_31` text,
+  `c_46` text,
+  `debris` text,
+  `calculus` text,
+  `nilai` text,
+  `kriteria` text,
+  `id_user` text NOT NULL,
+  `tgl_input` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mlite_pengaduan`
 --
 
@@ -381,7 +475,7 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (11, 'settings', 'homepage', 'main'),
 (12, 'settings', 'wallpaper', 'uploads/settings/wallpaper.jpg'),
 (13, 'settings', 'text_color', '#44813e'),
-(14, 'settings', 'igd', '-'),
+(14, 'settings', 'igd', 'IGDK'),
 (15, 'settings', 'laboratorium', '-'),
 (16, 'settings', 'pj_laboratorium', 'DR001'),
 (17, 'settings', 'radiologi', '-'),
@@ -515,9 +609,9 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (145, 'veronisa', 'username', ''),
 (146, 'veronisa', 'password', ''),
 (147, 'veronisa', 'obat_kronis', ''),
-(148, 'jkn_mobile', 'carakirim', 'baru'),
-(149, 'jkn_mobile', 'kirimantrian', 'tidak'),
-(150, 'settings', 'keamanan', 'ya');
+(148, 'jkn_mobile', 'kirimantrian', 'tidak'),
+(149, 'settings', 'keamanan', 'ya'),
+(150, 'settings', 'dokter_ralan', 'tidak');
 
 -- --------------------------------------------------------
 
@@ -759,16 +853,17 @@ ALTER TABLE `mlite_antrian_loket`
   ADD PRIMARY KEY (`kd`);
 
 --
--- Indexes for table `mlite_antrian_referensi`
---
-ALTER TABLE `mlite_antrian_referensi`
-  ADD PRIMARY KEY (`nomor_referensi`);
-
---
 -- Indexes for table `mlite_billing`
 --
 ALTER TABLE `mlite_billing`
   ADD PRIMARY KEY (`id_billing`);
+
+--
+-- Indexes for table `mlite_bridging_pcare`
+--
+ALTER TABLE `mlite_bridging_pcare`
+  ADD PRIMARY KEY (`id`) USING BTREE;
+
 
 --
 -- Indexes for table `mlite_detailjurnal`
@@ -819,6 +914,12 @@ ALTER TABLE `mlite_notifications`
 -- Indexes for table `mlite_odontogram`
 --
 ALTER TABLE `mlite_odontogram`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mlite_ohis`
+--
+ALTER TABLE `mlite_ohis`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -928,6 +1029,11 @@ ALTER TABLE `mlite_antrian_loket`
 ALTER TABLE `mlite_billing`
   MODIFY `id_billing` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `mlite_bridging_pcare`
+--
+ALTER TABLE `mlite_bridging_pcare`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `mlite_duitku`
 --
 ALTER TABLE `mlite_duitku`
@@ -947,6 +1053,11 @@ ALTER TABLE `mlite_notifications`
 --
 ALTER TABLE `mlite_odontogram`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_ohis`
+--
+ALTER TABLE `mlite_ohis`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;  
 --
 -- AUTO_INCREMENT for table `mlite_pengaduan_detail`
 --
