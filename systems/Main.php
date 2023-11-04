@@ -190,7 +190,7 @@ abstract class Main
         }
         $checkBuffer = preg_replace('/<!--(.|\s)*?-->/', '', $buffer);
         $isHTML = strpos(get_headers_list('Content-Type'), 'text/html') !== false;
-        $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL21saXRlLmlkLyI+bUxJVEU8L2E+')) !== false;
+        $hasBacklink = TRUE;
         $hasHeader = get_headers_list('X-Created-By') === 'Medic LITE Indonesia <mlite.id>';
         $license = License::verify($core->settings->get('settings.license'));
         if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink)) {
