@@ -1,9 +1,5 @@
--- phpMyAdmin SQL Dump
--- version 4.4.15
--- http://www.phpmyadmin.net
---
 -- Host: localhost
--- Generation Time: Aug 12, 2023 at 08:26 PM
+-- Generation Time: Nov 10, 2023 at 02:12 AM
 -- Server version: 5.7.39-log
 -- PHP Version: 7.3.33
 
@@ -1755,6 +1751,35 @@ CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `mlite_ohis`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_ohis` (
+  `id` int(11) NOT NULL,
+  `no_rkm_medis` text NOT NULL,
+  `d_16` text,
+  `d_11` text,
+  `d_26` text,
+  `d_36` text,
+  `d_31` text,
+  `d_46` text,
+  `c_16` text,
+  `c_11` text,
+  `c_26` text,
+  `c_36` text,
+  `c_31` text,
+  `c_46` text,
+  `debris` text,
+  `calculus` text,
+  `nilai` text,
+  `kriteria` text,
+  `id_user` text NOT NULL,
+  `tgl_input` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mlite_pengaduan`
 --
 
@@ -1817,6 +1842,55 @@ CREATE TABLE IF NOT EXISTS `mlite_remember_me` (
   `user_id` int(10) NOT NULL,
   `expiry` int(100) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_satu_sehat_departemen`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_departemen` (
+  `dep_id` char(4) NOT NULL,
+  `id_organisasi_satusehat` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_satu_sehat_lokasi`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_lokasi` (
+  `kode` char(5) NOT NULL,
+  `lokasi` varchar(40) DEFAULT NULL,
+  `id_organisasi_satusehat` varchar(40) DEFAULT NULL,
+  `id_lokasi_satusehat` varchar(40) DEFAULT NULL,
+  `longitude` varchar(30) NOT NULL,
+  `latitude` varchar(30) NOT NULL,
+  `altitude` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_satu_sehat_response`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_response` (
+  `no_rawat` varchar(17) NOT NULL,
+  `id_encounter` varchar(50) DEFAULT NULL,
+  `id_condition` varchar(50) DEFAULT NULL,
+  `id_observation_ttvnadi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvrespirasi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvsuhu` varchar(50) DEFAULT NULL,
+  `id_observation_ttvspo2` varchar(50) DEFAULT NULL,
+  `id_observation_ttvgcs` varchar(50) DEFAULT NULL,
+  `id_observation_ttvtinggi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvberat` varchar(50) DEFAULT NULL,
+  `id_observation_ttvperut` varchar(50) DEFAULT NULL,
+  `id_observation_ttvtensi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -4301,6 +4375,12 @@ ALTER TABLE `mlite_odontogram`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `mlite_ohis`
+--
+ALTER TABLE `mlite_ohis`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `mlite_pengaduan`
 --
 ALTER TABLE `mlite_pengaduan`
@@ -4337,6 +4417,27 @@ ALTER TABLE `mlite_rekeningtahun`
 ALTER TABLE `mlite_remember_me`
   ADD PRIMARY KEY (`id`),
   ADD KEY `mlite_remember_me_ibfk_1` (`user_id`);
+
+--
+-- Indexes for table `mlite_satu_sehat_departemen`
+--
+ALTER TABLE `mlite_satu_sehat_departemen`
+  ADD PRIMARY KEY (`dep_id`),
+  ADD UNIQUE KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`);
+
+--
+-- Indexes for table `mlite_satu_sehat_lokasi`
+--
+ALTER TABLE `mlite_satu_sehat_lokasi`
+  ADD PRIMARY KEY (`kode`),
+  ADD UNIQUE KEY `id_lokasi_satusehat` (`id_lokasi_satusehat`),
+  ADD KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`);
+
+--
+-- Indexes for table `mlite_satu_sehat_response`
+--
+ALTER TABLE `mlite_satu_sehat_response`
+  ADD PRIMARY KEY (`no_rawat`);
 
 --
 -- Indexes for table `mlite_settings`
@@ -5020,6 +5121,11 @@ ALTER TABLE `mlite_notifications`
 ALTER TABLE `mlite_odontogram`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `mlite_ohis`
+--
+ALTER TABLE `mlite_ohis`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `mlite_pengaduan_detail`
 --
 ALTER TABLE `mlite_pengaduan_detail`
@@ -5406,6 +5512,24 @@ ALTER TABLE `mlite_pengaduan_detail`
 --
 ALTER TABLE `mlite_rekeningtahun`
   ADD CONSTRAINT `mlite_rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `mlite_satu_sehat_departemen`
+--
+ALTER TABLE `mlite_satu_sehat_departemen`
+  ADD CONSTRAINT `mlite_satu_sehat_departemen_ibfk_1` FOREIGN KEY (`dep_id`) REFERENCES `departemen` (`dep_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `mlite_satu_sehat_lokasi`
+--
+ALTER TABLE `mlite_satu_sehat_lokasi`
+  ADD CONSTRAINT `mlite_satu_sehat_lokasi_ibfk_2` FOREIGN KEY (`id_organisasi_satusehat`) REFERENCES `mlite_satu_sehat_departemen` (`id_organisasi_satusehat`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `mlite_satu_sehat_response`
+--
+ALTER TABLE `mlite_satu_sehat_response`
+  ADD CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `mlite_subrekening`
